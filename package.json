@@ -6,17 +6,20 @@
   "homepage": "https://github.com/little-blak/wedding-invitation.git",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "rimraf dist && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "vue": "^3.4.21"
+    "rimraf": "^6.1.2",
+    "vant": "^4.9.22",
+    "vue": "^3.4.21",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
-    "gh-pages": "^6.1.1", 
+    "gh-pages": "^6.1.1",
     "vite": "^5.2.0"
   }
 }
