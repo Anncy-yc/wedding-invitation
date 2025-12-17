@@ -1,7 +1,8 @@
 <template>
   <div class="wedding-invitation">
     <!-- 封面 -->
-    <div class="cover" v-if="showCover">
+       <span>日期：{{ weddingDate }}</span>
+    <div ref="coverElement" class="cover" v-if="showCover">
       <div class="cover-content">
         <h1 class="title">婚礼邀请函</h1>
         <div class="names">
@@ -12,7 +13,6 @@
         <button class="open-btn" @click="handleAcceptInvitation">接受邀请</button>
       </div>
     </div>
-
     <!-- 邀请函主体 -->
     <div class="invitation-content" v-else>
       <!-- 婚礼信息 -->
@@ -83,17 +83,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router' 
+import { ref, onMounted, onUnmounted } from 'vue' // 引入 onMounted 和 onUnmounted
 
 // 响应式数据
+const coverElement = ref(null); // 新增：声明 coverElement ref
 const showCover = ref(true)
 const showViewer = ref(false)
 const currentPhotoIndex = ref(0)
 
 // 婚礼信息
 const groomName = ref('王超强')
-const brideName = ref('李四')
+const brideName = ref('安亚成')
 const invitationText = ref('谨定于公历2024年X月X日，为张三先生和李四女士举行婚礼。恭请您的光临！')
 const weddingDate = ref('2024年X月X日')
 const weddingTime = ref('中午12:00')
@@ -119,6 +120,7 @@ const wishes = ref([
 // 方法
 const openInvitation = () => {
   showCover.value = false
+  document.body.style.overflow = 'auto';
 }
 
 // 新增：处理接受邀请的逻辑
@@ -164,6 +166,25 @@ const nextPhoto = () => {
     currentPhotoIndex.value++
   }
 }
+const setCoverHeight = () => {
+  if (coverElement.value) {
+    // window.innerHeight 是最可靠的、不包含浏览器UI的视口高度
+    coverElement.value.style.height = `${window.innerHeight}px`;
+  }
+};
+
+onMounted(async () => { // 使用 async/await
+  await nextTick(); // 等待下一次 DOM 更新
+
+  // 现在可以安全地设置高度和添加监听器了
+  setCoverHeight();
+  window.addEventListener('resize', setCoverHeight);
+});
+
+onUnmounted(() => {
+  // 组件卸载时，移除事件监听器，防止内存泄漏
+  window.removeEventListener('resize', setCoverHeight);
+});
 </script>
 
 <style scoped>
@@ -171,21 +192,53 @@ const nextPhoto = () => {
   font-family: 'Microsoft YaHei', sans-serif;
   max-width: 800px;
   margin: 0 auto;
+}
+.invitation-content {
+  animation: fadeIn 1s ease-in-out;
+  /* 为整个内容区域添加一个统一的内边距 */
   padding: 20px;
 }
 
 /* 封面样式 */
 .cover {
-  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  overflow: hidden;
+  background-image: url('@/assets/images/cover-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  /* 修改 flex 布局 */
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  flex-direction: column; /* 改为垂直布局 */
+  justify-content: flex-end; /* 将内容推到底部 */
+  align-items: center; /* 水平方向依然居中 */
+  padding-bottom: 16vh; /* 关键：添加一个底部内边距，为 25% 的视口高度 */
+  box-sizing: border-box; /* 确保 padding 不会撑大容器 */
+}
+
+/* 可选：添加一个半透明的遮罩层，让文字更清晰 */
+
+.cover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 1;
 }
 
 .cover-content {
+  position: relative;
+  z-index: 2;
   text-align: center;
+  color: white;
   animation: fadeIn 1s ease-in-out;
+  text-shadow: 2px 2px 8px rgba(223, 223, 223, 0.9);
+  /* 移除任何可能影响定位的 margin 或 transform */
 }
 
 .title {
@@ -227,7 +280,9 @@ const nextPhoto = () => {
 }
 
 section {
-  margin: 40px 0;
+  /* 移除原来的 margin-top，因为外层已经有 padding 了 */
+  margin: 40px 0; /* 只保留上下边距 */
+  margin-top: 0; /* 明确设置上边距为 0 */
   padding: 20px;
   background: white;
   border-radius: 10px;
@@ -395,6 +450,36 @@ h2 {
   
   .gallery {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .cover {
+    /* 确保在移动端也是全屏 */
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .cover-content {
+    padding: 0 20px; /* 给内容增加一些左右内边距，防止文字贴边 */
+  }
+
+  .title {
+    font-size: 2.2em; /* 减小标题字体 */
+    margin-bottom: 20px; /* 减小下边距 */
+  }
+
+  .names {
+    font-size: 1.2em; /* 减小名字字体 */
+    margin-bottom: 30px; /* 减小下边距 */
+  }
+
+  .heart {
+    font-size: 1.2em; /* 调整心形大小以匹配文字 */
+  }
+
+  .open-btn {
+    padding: 12px 30px; /* 适当减小按钮内边距 */
+    font-size: 1.1em; /* 减小按钮字体 */
   }
 }
 </style>
