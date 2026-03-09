@@ -28,7 +28,7 @@
   </div>
 </template>
 
-<script >
+<script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 

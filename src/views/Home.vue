@@ -16,13 +16,11 @@
     />
     
     <div v-else class="main-content">
-      <Gallery :photos="photos" />
-      <InvitationContent
-        :invitationText="invitationText"
+      <Invitation
+        :groomName="groomName"
+        :brideName="brideName"
         :weddingDate="weddingDate"
         :weddingTime="weddingTime"
-        :weddingLocation="weddingLocation"
-        :wishes="wishes"
       />
     </div>
   </div>
@@ -31,18 +29,17 @@
 <script setup>
 import { ref } from 'vue'
 import Cover from '@/components/Cover.vue'
-import Gallery from '@/components/Gallery.vue'
-import InvitationContent from '@/components/InvitationContent.vue'
+import Invitation from '@/components/Invitation.vue'
 import VideoPlayer from '@/components/VideoPlayer.vue'
 
 const showCover = ref(true)
 const showVideo = ref(false)
 
 const groomName = ref('王超强')
-const brideName = ref('安亚成')
+const brideName = ref('安亚城')
 const invitationText = ref('谨定于公历2024年X月X日，为张三先生和李四女士举行婚礼。恭请您的光临！')
-const weddingDate = ref('2024年X月X日')
-const weddingTime = ref('中午12:00')
+const weddingDate = ref('2026-04-12')
+const weddingTime = ref('12:00')
 const weddingLocation = ref('XX酒店XX厅')
 
 const photos = ref([
